@@ -1,0 +1,81 @@
+#!/usr/local/bin/perl
+@unity = ("", "jeden", "dwa", "trzy", "cztery", "piec", "szesc", "siedem", "osiem", "dziewiec");
+@tentotwenty = ("dziesiec", "jedenascie", "dwanascie", "trzynascie", "czternascie", "pietnascie", "szesnascie", "siedemnascie", "osiemnascie", "dziewietnascie");
+@tens = ("", "dziesiec","dwadzieścia", "trzydziesci", "czterdziesci", "piecdziesiat", "szescdziesiat", "siedemdziesiat", "osiemdziesiat", "dziewiecdziesiat");
+@hundreads = ("","sto", "dwiescie", "trzysta", "czterysta", "piecset", "szescset", "siedemset", "osiemset", "dziewiecset");
+@thousands = ("", "tysiac", "tysiace", "tysiace", "tysiace", "tysiecy", "tysiecy","tysiecy", "tysiecy", "tysiecy");
+open(FILE, "<", "test.txt") or die("Can't open file");
+$i=0;
+@lines = <FILE>;
+close(FILE);
+foreach(@lines)
+{
+	$line=@lines[$i];
+	@all_nums = $line =~ /(\d+)/g;
+	for my $el (@all_nums)
+	{	
+		if($el>9999)
+		{
+		}
+		else
+		{
+			if($el>=1000)
+			{	
+				$res1=($el-($el % 1000))/1000;
+				$res2=(($el % 1000)-($el % 100))/100;
+				if($el%100>=20)
+				{
+					$res3=(($el % 100)-($el % 10))/10;
+					$name=" @unity[$res1] @thousands[$res1] @hundreads[$res2] @tens[$res3] @unity[$el %10] ";
+				}
+				elsif($el%100<20 && $el%100>=10)
+				{
+					$name=" @unity[$res1] @thousands[$res1] @hundreads[$res2] @tentotwenty[$el %10] ";
+				}
+				else
+				{
+					$name=" @unity[$res1] @thousands[$res1] @hundreads[$res2] @unity[$el %10] ";
+				}	
+			}
+			elsif($el>=100 && $el%100>=20 )
+			{
+				$res1=($el-($el % 100))/100;
+				$res2=(($el % 100)-($el % 10))/10;	
+				$name=" @hundreads[$res1] @tens[$res2] @unity[$el %10] ";
+			}
+			elsif($el>=100 && $el%100<20 && $el%100>=10)
+			{
+				$res1=($el-($el % 100))/100;
+				$name=" @hundreads[$res1] @tentotwenty[$el %10] ";
+
+			}
+			elsif($el>=100 && $el%100<10)
+			{
+				$res1=($el-($el % 100))/100;
+				$name=" @hundreads[$res1] @unity[$el %10] ";
+			}
+			elsif($el>=20)
+			{	
+				$res1=($el-($el % 10))/10;
+				$name=" @tens[$res1] @unity[$el %10] ";
+			}
+			elsif($el>=10)
+			{
+				$name=" @tentotwenty[$el %10] ";
+			}
+			else
+			{
+				$name=" @unity[$el] ";
+			}
+			$line =~ s/$el/$name/;
+			$name="";
+		}
+	}
+	@lines[$i]=$line;
+	$line="";
+	$i++;
+}
+print (@lines);
+my $outfile = 'out.txt';
+open (FILE, "> $outfile") || die "problem opening $outfile\n";
+print FILE @lines;
